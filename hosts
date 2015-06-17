@@ -1,0 +1,2 @@
+[webservers]
+archlinux ansible_ssh_host=0.0.0.0 ansible_ssh_pass=phongvcao ansible_python_interpreter=/usr/bin/python2
