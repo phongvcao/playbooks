@@ -1,5 +1,5 @@
 -   name: Configure webserver with nginx
-    hosts: archlinux
+    hosts: testserver
     sudo: True
     tasks:
         -   name: Creates directory
