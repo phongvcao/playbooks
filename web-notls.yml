@@ -1,27 +1,45 @@
 -   name: Configure webserver with nginx
     hosts: testserver
     sudo: True
+    vars:
+        key_file: /etc/nginx/ssl/nginx.key
+        cert_file: /etc/nginx/ssl/nginx.crt
+        conf_file: /etc/nginx/sites-available/default
+        server_name: localhost
     tasks:
-        -   name: Creates directory
-            file: path=/etc/nginx/sites-available state=directory
+    -   name: Creates sites-available directory
+        file: path=/etc/nginx/sites-available state=directory
 
-        -   name: Creates directory
-            file: path=/etc/nginx/sites-enabled state=directory
+    -   name: Creates sites-enabled directory
+        file: path=/etc/nginx/sites-enabled state=directory
 
-        -   name: install nginx
-            pacman: name=nginx update_cache=yes
+    -   name: install nginx
+        pacman: name=nginx update_cache=yes cache_valid_time=3600
 
-        -   name: copy nginx config file
-            copy: src=files/nginx.conf dest=/etc/nginx/sites-available/default
+    -   name: create direcotires for ssl certificates
+        file: path=/etc/nginx/ssl state=directory
 
-        -   name: enable configuration
-            file: >
-                dest=/etc/nginx/sites-enabled/default
-                src=/etc/nginx/sites-available/default
-                state=link
+    -   name: copy TLS key
+        copy: src=files/nginx.key dest={{ key_file }} owner=root mode=0600
+        notify: restart nginx
 
-        -   name: copy index.html
-            template: src=templates/index.html.j2 dest=/usr/share/nginx/html/index.html mode=0644
+    -   name: copy TLS certificate
+        copy: src=files/nginx.crt dest={{ cert_file }}
+        notify: restart nginx
 
-        -   name: restart nginx
-            service: name=nginx state=restarted
+    -   name: copy nginx config file
+        copy: src=templates/nginx.conf.j2 dest={{ conf_file }}
+        notify: restart nginx
+
+    -   name: enable configuration
+        file: >
+            dest=/etc/nginx/sites-enabled/default
+            src={{ conf_file }}
+            state=link
+        notify: restart nginx
+
+    -   name: copy index.html
+        template: src=templates/index.html.j2 dest=/usr/share/nginx/html/index.html mode=0644
+    handlers:
+    -   name: restart nginx
+        service: name=nginx state=restarted
