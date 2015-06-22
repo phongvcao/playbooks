@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
     # Every Vagrant development environment requires a box. You can search for
     # boxes at https://atlas.hashicorp.com/search.
-    config.vm.box = "terrywang/archlinux"
+    # config.vm.box = "terrywang/archlinux"
 
     # Disable automatic box update checking. If you disable this, then
     # boxes will only be checked for updates when the user runs
@@ -21,8 +21,8 @@ Vagrant.configure(2) do |config|
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
     # accessing "localhost:8080" will access port 80 on the guest machine.
-    config.vm.network "forwarded_port", guest: 80, host: 8080
-    config.vm.network "forwarded_port", guest: 443, host: 8443
+    # config.vm.network "forwarded_port", guest: 80, host: 8080
+    # config.vm.network "forwarded_port", guest: 443, host: 8443
 
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
@@ -69,4 +69,27 @@ Vagrant.configure(2) do |config|
     #   sudo apt-get install -y apache2
     # SHELL
     # config.vm.provision "shell", path: "provision.sh"
+
+    config.ssh.insert_key = false
+
+    config.vm.define "vagrant1" do |vagrant1|
+        vagrant1.vm.box = "ubuntu/trusty64"
+        # vagrant1.vm.box = "terrywang/archlinux"
+        vagrant1.vm.network "forwarded_port", guest: 80, host: 8080
+        vagrant1.vm.network "forwarded_port", guest: 443, host: 8443
+    end
+
+    config.vm.define "vagrant2" do |vagrant2|
+        vagrant2.vm.box = "ubuntu/trusty64"
+        # vagrant2.vm.box = "terrywang/archlinux"
+        vagrant2.vm.network "forwarded_port", guest: 80, host: 8081
+        vagrant2.vm.network "forwarded_port", guest: 443, host: 8444
+    end
+
+    config.vm.define "vagrant3" do |vagrant3|
+        vagrant3.vm.box = "ubuntu/trusty64"
+        # vagrant3.vm.box = "terrywang/archlinux"
+        vagrant3.vm.network "forwarded_port", guest: 80, host: 8082
+        vagrant3.vm.network "forwarded_port", guest: 443, host: 8445
+    end
 end
